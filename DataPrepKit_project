@@ -1,0 +1,69 @@
+#!/usr/bin/python3
+import pandas as pd
+import matplotlib.pyplot as plt
+import numpy as np
+
+# Data Reading Functions
+def read_csv(file_path):
+    return pd.read_csv(file_path)
+
+def read_excel(file_path):
+    return pd.read_excel(file_path)
+
+def read_json(file_path):
+    return pd.read_json(file_path)
+
+# Data Summary Functions
+def data_summary(data):
+    summary = {
+        'mean': np.mean(data),
+        'median': np.median(data),
+        'mode': data.mode(),
+        'min': np.min(data),
+        'max': np.max(data),
+    }
+    return summary
+
+# Handling Missing Values Functions
+def drop_missing_values(data):
+    return data.dropna()
+
+def fill_missing_values(data, strategy='mean'):
+    if strategy == 'mean':
+        return data.fillna(data.mean())
+    elif strategy == 'median':
+        return data.fillna(data.median())
+    else:
+        raise ValueError("Invalid strategy. Choose 'mean' or 'median'.")
+
+# Categorical Data Encoding Functions
+def one_hot_encode(data, column):
+    return pd.get_dummies(data, columns=[column])
+
+def ordinal_encode(data, column):
+    return data.astype({column: 'category'}).cat.codes
+
+# Visualization Function
+def plot_data(data, x_column, y_column):
+    plt.figure(figsize=(10,  6))
+    plt.plot(data[x_column], data[y_column])
+    plt.xlabel(x_column)
+    plt.ylabel(y_column)
+    plt.title('Data Visualization')
+    plt.show()
+
+# Example usage
+# Read data from a CSV file
+df = read_csv('data.csv')
+
+# Display summary statistics
+print(data_summary(df['some_column']))
+
+# Handle missing values by filling with the mean
+df_filled = fill_missing_values(df)
+
+# One-hot encode a categorical column
+df_encoded = one_hot_encode(df_filled, 'categorical_column')
+
+# Plot the data
+plot_data(df_encoded, 'x_column_name', 'y_column_name')
