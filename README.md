@@ -1,5 +1,6 @@
-#firs_step_for_ML	
-In the DataPrepKit capstone project, students will create a Python package that serves as a comprehensive toolkit for preprocessing datasets. Leveraging their knowledge of NumPy and Pandas, students will design functions to seamlessly read data from various file formats, provide a data summary, handle missing values, and encode categorical data. The final deliverable will be a published package on PyPI under the name "DataPrepKit."
+##firs_step_for_ML	
+##In the DataPrepKit capstone project
+students will create a Python package that serves as a comprehensive toolkit for preprocessing datasets. Leveraging their knowledge of NumPy and Pandas, students will design functions to seamlessly read data from various file formats, provide a data summary, handle missing values, and encode categorical data. The final deliverable will be a published package on PyPI under the name "DataPrepKit."
 Key Features:
 
 1. Data Reading: Implement functions to read data from different file formats such as CSV, Excel, and JSON, using Pandas.
@@ -13,10 +14,10 @@ Project Requirements:
 2. Implementation of robust functions for data reading, summary generation, missing value handling, and categorical data encoding.
 3. Successful registration and deployment of the package on PyPI.
 
-Evaluation Criteria:
+##Evaluation Criteria:
 * Functionality and correctness of the implemented data preprocessing features.
 * Quality and completeness of the documentation.
 * Effectiveness of the test suite in ensuring the reliability of the package.
 * Successful deployment of the package on PyPI.
-* Adherence to best practices in coding, packaging, and testing.
+* Adherence to best practices in coding, packaging, and testing
 * Creativity and efficiency in addressing different file formats and data preprocessing challenges.
