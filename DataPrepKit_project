@@ -1,47 +1,48 @@
-import os
+#!/usr/bin/python3
 import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
 
 # Data Reading Functions
-def read_csv(file_path):
-    return pd.read_csv(file_path)
+def read_data(file_path):
+    if file_path.endswith('.csv'):
+        return pd.read_csv(file_path)
+    elif file_path.endswith('.xlsx') or file_path.endswith('.xls'):
+        return pd.read_excel(file_path)
+    elif file_path.endswith('.json'):
+        return pd.read_json(file_path)
+    else:
+        raise ValueError("Unsupported file format. Supported formats are: CSV, Excel, JSON")
 
-def read_excel(file_path):
-    return pd.read_excel(file_path)
-
-def read_json(file_path):
-    return pd.read_json(file_path)
-
-# Data Summary Functions
-def data_summary(data):
-    summary = {
-        'mean': np.mean(data),
-        'median': np.median(data),
-        'mode': data.mode(),
-        'min': np.min(data),
-        'max': np.max(data),
-    }
-    return summary
+# Data Exploration and Analysis (EDA)
+def explore_data(data):
+    print("Data Info:")
+    print(data.info())
+    print("\nData Description:")
+    print(data.describe())
+    print("\nData Head:")
+    print(data.head())
 
 # Handling Missing Values Functions
-def drop_missing_values(data):
-    return data.dropna()
+def handle_missing_values(data):
+    # Identify numeric and categorical columns
+    numeric_cols = data.select_dtypes(include=np.number).columns.tolist()
+    categorical_cols = data.select_dtypes(exclude=np.number).columns.tolist()
 
-def fill_missing_values(data, strategy='mean'):
-    if strategy == 'mean':
-        return data.fillna(data.mean())
-    elif strategy == 'median':
-        return data.fillna(data.median())
-    else:
-        raise ValueError("Invalid strategy. Choose 'mean' or 'median'.")
+    # Handling missing values in numeric columns
+    for col in numeric_cols:
+        if data[col].isnull().sum() > 0:
+            data[col].fillna(data[col].mean(), inplace=True)
+
+    # Handling missing values in categorical columns
+    for col in categorical_cols:
+        if data[col].isnull().sum() > 0:
+            data[col].fillna(data[col].mode()[0], inplace=True)
 
 # Categorical Data Encoding Functions
-def one_hot_encode(data, column):
-    return pd.get_dummies(data, columns=[column])
-
-def ordinal_encode(data, column):
-    return data.astype({column: 'category'}).cat.codes
+def encode_categorical_data(data):
+    encoded_data = pd.get_dummies(data)
+    return encoded_data
 
 # Visualization Function
 def plot_data(data, x_column, y_column):
@@ -52,67 +53,25 @@ def plot_data(data, x_column, y_column):
     plt.title('Data Visualization')
     plt.show()
 
-# Requesting User Input for Data Path
-def get_user_input():
-    data_path = input("Please enter the path to your data file: ")
-    return data_path
-
-# Determining Data Type and Reading
-def read_data(file_path):
-    _, file_extension = os.path.splitext(file_path)
-    if file_extension == '.csv':
-        return read_csv(file_path)
-    elif file_extension == '.xlsx' or file_extension == '.xls':
-        return read_excel(file_path)
-    elif file_extension == '.json':
-        return read_json(file_path)
-    else:
-        raise ValueError("Unsupported file type. Please provide a CSV, Excel, or JSON file.")
-
-# Applying EDA
-def apply_eda(data):
-    # Display summary statistics
-    for column in data.columns:
-        if data[column].dtype == 'object':
-            print(f"Summary for {column}:")
-            print(data_summary(data[column]))
-    
-    # Plotting data
-    for column in data.select_dtypes(include=['float64', 'int64']).columns:
-        plot_data(data, column, 'Count')
-        plt.show()
-
-# Handling Missing Values
-def handle_missing_values(data):
-    strategy = input("Enter the strategy for handling missing values (mean/median for continuous, mode for categorical): ")
-    for column in data.columns:
-        if data[column].dtype == 'object':
-            data[column] = fill_missing_values(data[column], strategy)
-        else:
-            data[column] = fill_missing_values(data[column], strategy)
-    return data
-
-# Categorical Data Encoding
-def encode_categorical_data(data):
-    encoding_type = input("Enter the encoding type for categorical data (one_hot/ordinal): ")
-    for column in data.select_dtypes(include=['object']).columns:
-        if encoding_type == 'one_hot':
-            data = one_hot_encode(data, column)
-        elif encoding_type == 'ordinal':
-            data = ordinal_encode(data, column)
-        else:
-            print("Invalid encoding type. Using one_hot encoding by default.")
-            data = one_hot_encode(data, column)
-    return data
-
-# Main Function
-def main():
-    data_path = get_user_input()
-    data = read_data(data_path)
-    apply_eda(data)
-    data = handle_missing_values(data)
-    data = encode_categorical_data(data)
-    # Further analysis and modeling can be done here
-
+# Example usage
 if __name__ == "__main__":
-    main()
+    # Ask user to input data path
+    file_path = input("Enter the path to the data file: ")
+
+    # Read data
+    df = read_data(file_path)
+
+    # Explore data
+    explore_data(df)
+
+    # Handle missing values
+    handle_missing_values(df)
+
+    # Encode categorical data
+    df_encoded = encode_categorical_data(df)
+
+    # Print column names in df_encoded
+    print("Column names in df_encoded:", df_encoded.columns)
+
+    # Plot the data
+    plot_data(df_encoded, 'actual_x_column_name', 'actual_y_column_name')
