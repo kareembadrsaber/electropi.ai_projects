@@ -1,4 +1,4 @@
-#!/usr/bin/python3
+import os
 import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
@@ -52,18 +52,67 @@ def plot_data(data, x_column, y_column):
     plt.title('Data Visualization')
     plt.show()
 
-# Example usage
-# Read data from a CSV file
-df = read_csv('data.csv')
+# Requesting User Input for Data Path
+def get_user_input():
+    data_path = input("Please enter the path to your data file: ")
+    return data_path
 
-# Display summary statistics
-print(data_summary(df['some_column']))
+# Determining Data Type and Reading
+def read_data(file_path):
+    _, file_extension = os.path.splitext(file_path)
+    if file_extension == '.csv':
+        return read_csv(file_path)
+    elif file_extension == '.xlsx' or file_extension == '.xls':
+        return read_excel(file_path)
+    elif file_extension == '.json':
+        return read_json(file_path)
+    else:
+        raise ValueError("Unsupported file type. Please provide a CSV, Excel, or JSON file.")
 
-# Handle missing values by filling with the mean
-df_filled = fill_missing_values(df)
+# Applying EDA
+def apply_eda(data):
+    # Display summary statistics
+    for column in data.columns:
+        if data[column].dtype == 'object':
+            print(f"Summary for {column}:")
+            print(data_summary(data[column]))
+    
+    # Plotting data
+    for column in data.select_dtypes(include=['float64', 'int64']).columns:
+        plot_data(data, column, 'Count')
+        plt.show()
 
-# One-hot encode a categorical column
-df_encoded = one_hot_encode(df_filled, 'categorical_column')
+# Handling Missing Values
+def handle_missing_values(data):
+    strategy = input("Enter the strategy for handling missing values (mean/median for continuous, mode for categorical): ")
+    for column in data.columns:
+        if data[column].dtype == 'object':
+            data[column] = fill_missing_values(data[column], strategy)
+        else:
+            data[column] = fill_missing_values(data[column], strategy)
+    return data
 
-# Plot the data
-plot_data(df_encoded, 'x_column_name', 'y_column_name')
+# Categorical Data Encoding
+def encode_categorical_data(data):
+    encoding_type = input("Enter the encoding type for categorical data (one_hot/ordinal): ")
+    for column in data.select_dtypes(include=['object']).columns:
+        if encoding_type == 'one_hot':
+            data = one_hot_encode(data, column)
+        elif encoding_type == 'ordinal':
+            data = ordinal_encode(data, column)
+        else:
+            print("Invalid encoding type. Using one_hot encoding by default.")
+            data = one_hot_encode(data, column)
+    return data
+
+# Main Function
+def main():
+    data_path = get_user_input()
+    data = read_data(data_path)
+    apply_eda(data)
+    data = handle_missing_values(data)
+    data = encode_categorical_data(data)
+    # Further analysis and modeling can be done here
+
+if __name__ == "__main__":
+    main()
